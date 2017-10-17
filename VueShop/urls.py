@@ -13,17 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url,include
+from django.conf.urls import url, include
 #from django.contrib import admin
 import xadmin
 from VueShop.settings import MEDIA_ROOT
 from django.views.static import serve
 from goods.views import GoodsListViewset, CategoryViewset
+from trade.views import ShoppingCartViewset
 from users.views import SmsCodeViewset, UserViewset
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 from rest_framework_jwt.views import obtain_jwt_token
+from user_operation.views import UserFavViewset, LeavingMessageViewset, AddresssViewset
 
 router = DefaultRouter()
 #配置goods的url
@@ -33,7 +35,15 @@ router.register(r'categorys', CategoryViewset, base_name="categorys")
 
 router.register(r'codes', SmsCodeViewset, base_name="codes")
 
+router.register(r'userfavs', UserFavViewset, base_name="userfavs")
+
 router.register(r'users', UserViewset, base_name="users")
+
+router.register(r'messages', LeavingMessageViewset, base_name="messages")
+
+router.register(r'address', AddresssViewset, base_name="address")
+
+router.register(r'shopcart', ShoppingCartViewset, base_name="shopcart")
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),

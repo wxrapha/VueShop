@@ -36,10 +36,29 @@ class SmsSerializer(serializers.Serializer):
         return mobile
 
 
+class UserDetailSerializer(serializers.ModelSerializer):
+    """
+    用户详情序列化类
+    """
+    class Meta:
+        model = User
+        fields = ('name', 'gender', 'birthday', 'email', 'mobile')
+
+
 class UserRegSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(required=True, max_length=4, min_length=4, help_text='验证码')
-    username = serializers.CharField(required=True, allow_blank=False,
+    code = serializers.CharField(required=True, max_length=4, min_length=4,
+                                 help_text='验证码', write_only=True, label='验证码')
+    username = serializers.CharField(required=True, allow_blank=False,label='用户名',
                                      validators=[UniqueValidator(queryset=User.objects.all(), message='用户已经存在')])
+    password = serializers.CharField(
+        style={'input_type': 'password'}, label='密码', write_only=True
+    )
+
+    #def create(self, validated_data):
+     #   user = super(UserRegSerializer, self).create(validated_data=validated_data)
+      #  user.set_password(validated_data['password'])
+       # user.save()
+        #return user
 
     def validate_code(self, code):
         verify_records = VerifyCode.objects.filter(mobile=self.initial_data['username']).order_by("-add_time")
@@ -47,7 +66,7 @@ class UserRegSerializer(serializers.ModelSerializer):
         if verify_records:
             last_record = verify_records[0]
             five_mintes_ago = datetime.now() - timedelta(hours=0, minutes=5, seconds=0)
-            if five_mintes_ago < last_record.add_time:
+            if five_mintes_ago > last_record.add_time:
                 raise serializers.ValidationError('验证码已过期')
             if last_record.code != code:
                 raise serializers.ValidationError('验证码错误')
@@ -62,4 +81,4 @@ class UserRegSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'code', 'mobile')
+        fields = ('username', 'code', 'mobile', 'password')
