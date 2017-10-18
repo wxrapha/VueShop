@@ -3,7 +3,6 @@
 
 """
 @version: 1.0
-@author: liyao
 @license: Apache Licence 
 @contact: yli@posbao.net
 @site: http://www.piowind.com/
